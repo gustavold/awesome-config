@@ -88,24 +88,16 @@ end
 -- }}}
 
 -- {{{ Menu
--- Create a laucher widget and a main menu
-myawesomemenu = {
-   { "manual", terminal .. " -e man awesome" },
-   { "edit config", editor_cmd .. " " .. awesome.conffile },
-   { "restart", awesome.restart },
-   { "quit", awesome.quit }
-}
 
-mymainmenu = awful.menu({ items = { { "awesome", myawesomemenu, beautiful.awesome_icon },
-                                    { "open terminal", terminal }
-                                  }
-                        })
+require('freedesktop.utils')
+freedesktop.utils.terminal = terminal
+freedesktop.utils.icon_theme = 'gnome'
+require('freedesktop.menu')
+menu_items = freedesktop.menu.new()
+table.insert(menu_items, { "XTerm", terminal, freedesktop.utils.lookup_icon({icon = 'terminal'}) })
+mymainmenu = awful.menu.new({ items = menu_items, width = 150 })
+mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon, menu = mymainmenu })
 
-mylauncher = awful.widget.launcher({ image = beautiful.awesome_icon,
-                                     menu = mymainmenu })
-
--- Menubar configuration
-menubar.utils.terminal = terminal -- Set the terminal for applications that require it
 -- }}}
 
 -- {{{ Wibox
