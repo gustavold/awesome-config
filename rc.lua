@@ -289,7 +289,11 @@ clientkeys = awful.util.table.join(
         function (c)
             c.maximized_horizontal = not c.maximized_horizontal
             c.maximized_vertical   = not c.maximized_vertical
-        end)
+        end),
+    awful.key({ modkey, "Shift" }, "t", function (c)
+        -- toggle titlebar
+        if (c:titlebar_top():geometry()['height'] > 0) then awful.titlebar(c, {size = 0}) else awful.titlebar(c) end
+    end)
 )
 
 -- Bind all key numbers to tags.
