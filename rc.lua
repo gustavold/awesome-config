@@ -11,8 +11,7 @@ local beautiful = require("beautiful")
 local naughty = require("naughty")
 local menubar = require("menubar")
 
-require("vicious")
-require("volume")
+vicious = require("vicious")
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
@@ -156,19 +155,51 @@ mytasklist.buttons = awful.util.table.join(
                                           end))
 
 -- {{{ Battery state
--- Initialize widget
 batwidget = awful.widget.progressbar()
---batwidget:set_width(8)
+batwidget:set_width(8)
 --batwidget:set_height(14)
---batwidget:set_vertical(true)
---batwidget:set_background_color("#000000")
---batwidget:set_border_color(nil)
---batwidget:set_color("#00bfff")
+batwidget:set_vertical(true)
+batwidget:set_background_color("#000000")
+batwidget:set_border_color(nil)
+batwidget:set_color("#00bfff")
+batwidget_t =  awful.tooltip({ objects = { batwidget },})
+vicious.register(batwidget, vicious.widgets.bat,
+		function(widget, args)
+			 batwidget_t:set_text(args[1] .. ": " .. args[3] .. " left")
+			return args[2]
+		end, 120, "BAT0")
 
--- {{{ Battery state
--- Initialize widget
-vicious.register(batwidget, vicious.widgets.bat, "$2", 120, "BAT0")
 
+-- {{{ CPU usage
+cpuwidget = awful.widget.graph()
+cpuwidget:set_width(30)
+cpuwidget:set_background_color("#494B4F")
+cpuwidget:set_color({ type = "linear", from = { 0, 0 }, to = { 10,0 }, stops = { {0, "#FF5656"}, {0.5, "#88A175"}, {1, "#AECF96" }}})
+vicious.register(cpuwidget, vicious.widgets.cpu, "$1")
+
+-- {{{ Memory usage
+memwidget = awful.widget.graph()
+memwidget:set_width(30)
+memwidget:set_background_color("#494B4F")
+memwidget:set_color({ type = "linear", from = { 0, 0 }, to = { 10,0 }, stops = { {0, "#FF5656"}, {0.5, "#88A175"}, {1, "#4996CF" }}})
+memwidget_t = awful.tooltip({ objects = { memwidget },})
+vicious.cache(vicious.widgets.mem)
+vicious.register(memwidget, vicious.widgets.mem,
+                function (widget, args)
+                    memwidget_t:set_text(" RAM: " .. args[2] .. "MB / " .. args[3] .. "MB ")
+                    return args[1]
+                 end, 3)
+
+-- {{{ Volume
+volwidget = awful.widget.progressbar()
+volwidget:set_width(8)
+volwidget:set_vertical(true)
+volwidget:set_background_color("#000000")
+volwidget:set_border_color(nil)
+volwidget:set_color("#888888")
+vicious.register(volwidget, vicious.widgets.volume, function(widget, args)
+                                                        if args[2] == "♩" then return "0" else return args[1] end
+                                                    end, 2, "Master")
 
 for s = 1, screen.count() do
     -- Create a promptbox for each screen
@@ -198,7 +229,9 @@ for s = 1, screen.count() do
 
     -- Widgets that are aligned to the right
     local right_layout = wibox.layout.fixed.horizontal()
-    right_layout:add(volume_widget)
+    right_layout:add(cpuwidget)
+    right_layout:add(memwidget)
+    right_layout:add(volwidget)
     right_layout:add(batwidget)
     if s == 1 then right_layout:add(wibox.widget.systray()) end
     right_layout:add(mytextclock)
