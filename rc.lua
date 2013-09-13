@@ -337,8 +337,18 @@ globalkeys = awful.util.table.join(
    awful.key({ }, "XF86AudioLowerVolume", function ()
        awful.util.spawn("amixer set Master 9%-", false) end),
    awful.key({ }, "XF86AudioMute", function ()
-       awful.util.spawn("amixer sset Master toggle", false) end)
+       awful.util.spawn("amixer sset Master toggle", false) end),
+   awful.key({ "Control", "Mod1" }, "l", function()
+	awful.util.spawn("gnome-screensaver-command --lock", false) end),
+   awful.key({ "Shift" }, "Caps_Lock", function()
+	defkmap = not defkmap
+	awful.util.spawn(mykmap[defkmap], false) end)
 )
+
+defkmap = true
+mykmap  = {	[true]  = 'setxkbmap "us"  "intl" ',
+		[false] = 'setxkbmap "br"  ""     '}
+awful.util.spawn(mykmap[defkmap], false)
 
 clientkeys = awful.util.table.join(
     awful.key({ modkey,           }, "f",      function (c) c.fullscreen = not c.fullscreen  end),
