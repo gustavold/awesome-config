@@ -13,6 +13,8 @@ local menubar = require("menubar")
 
 vicious = require("vicious")
 
+cfg = require("localconfig")
+
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
 -- another config (This code will only ever execute for the fallback config)
@@ -167,7 +169,7 @@ vicious.register(batwidget, vicious.widgets.bat,
 		function(widget, args)
 			 batwidget_t:set_text(args[1] .. ": " .. args[3] .. " left")
 			return args[2]
-		end, 120, "BAT0")
+		end, 120, cfg.bat_id)
 
 
 -- {{{ CPU usage
