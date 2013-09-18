@@ -192,6 +192,24 @@ vicious.register(memwidget, vicious.widgets.mem,
                     return args[1]
                  end, 3)
 
+-- {{{ Network
+netwidget = awful.widget.graph()
+netwidget:set_width(30)
+netwidget:set_background_color("#494B4F")
+netwidget:set_color("#FF5656")
+netwidget_t = awful.tooltip({ objects = { netwidget },})
+vicious.register(netwidget, vicious.widgets.net,
+                    function (widget, args)
+			local up = 0.0
+			local down = 0.0
+			for i, iface in pairs(cfg.ifaces) do
+				down = down + 8 * args['{'..iface..' down_mb}']
+				up = up + 8 * args['{'..iface..' up_mb}']
+			end
+                        netwidget_t:set_text("UP:      " .. up .. " mb/s\n" .. "DOWN: " .. down .. " mb/s")
+                        return 10*(up + down)
+                    end)
+
 -- {{{ Volume
 volwidget = awful.widget.progressbar()
 volwidget:set_width(8)
@@ -231,6 +249,7 @@ for s = 1, screen.count() do
 
     -- Widgets that are aligned to the right
     local right_layout = wibox.layout.fixed.horizontal()
+    right_layout:add(netwidget)
     right_layout:add(cpuwidget)
     right_layout:add(memwidget)
     right_layout:add(volwidget)
