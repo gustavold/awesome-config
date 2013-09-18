@@ -11,9 +11,14 @@ local beautiful = require("beautiful")
 local naughty = require("naughty")
 local menubar = require("menubar")
 
-vicious = require("vicious")
+local vicious = require("vicious")
 
-cfg = require("localconfig")
+local cfg = require("defaults")
+local ret,cfg2 = pcall(require,"localconfig")
+
+if ret then
+	for k,v in pairs(cfg2) do cfg[k] = v end
+end
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
